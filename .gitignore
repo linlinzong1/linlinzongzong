@@ -1,0 +1,19 @@
+# CMake
+build/
+cmake-build-*/
+
+# C++ 编译文件
+*.o
+*.obj
+*.a
+*.so
+*.exe
+
+# VS Code
+.vscode/
+
+# 临时文件
+*.swp
+
+# 日志
+*.log
