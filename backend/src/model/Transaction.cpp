@@ -1,0 +1,70 @@
+#include "model/Transaction.h"
+
+#include <iostream>
+
+Transaction::Transaction()
+{
+
+    id_=0;
+    type_=0;
+    amount_=0.0;
+    categoryId_=0;
+
+}
+
+Transaction::Transaction(
+    int id,
+    int type,
+    double amount,
+    int categoryId,
+    const std::string& date,
+    const std::string& note
+)
+{
+    
+    id_=id;
+    type_=type;
+    amount_=amount;
+    categoryId_=categoryId;
+    date_=date;
+    note_=note;
+
+}
+
+int Transaction::getId() const
+{
+    return id_;
+}
+
+int Transaction::getType() const
+{
+    return type_;
+}
+
+double Transaction::getAmount() const
+{
+    return amount_;
+}
+
+int Transaction::getCategoryId() const
+{
+    return categoryId_;
+}
+
+std::string Transaction::getDate() const
+{
+    return date_;
+}
+
+std::string Transaction::getNote() const
+{
+    return note_;
+}
+
+void Transaction::print() const
+{
+   
+    std::cout << "Amount: " << amount_ << std::endl;
+    
+    std::cout << "Note: " << note_ << std::endl;
+}
