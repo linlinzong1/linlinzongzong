@@ -1,20 +1,42 @@
-#include <iostream>
+#include "database/Database.h"
+#include "repository/TransactionRepository.h"
 
-#include "model/Transaction.h"
 
 int main()
 {
-	
-	Transaction lunch(
-		1,
-		2,
-		35.5,
-		3,
-		"2026-07-21",
-		"午饭"
-	);
 
-	lunch.print();
+    Database db;
 
-	return 0;
+    db.open("linlinzongzong.db");
+
+    db.createTables();
+
+
+    TransactionRepository repo(db);
+
+
+    Transaction t(
+        0,
+        1,
+        35.5,
+        1,
+        "2026-07-21",
+        "午饭"
+    );
+
+
+    repo.add(t);
+
+
+
+    auto list = repo.findAll();
+
+
+    for(auto& item:list)
+    {
+        item.print();
+    }
+
+
+    return 0;
 }
