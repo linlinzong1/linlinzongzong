@@ -1,5 +1,4 @@
-#include "database/Database.h"
-#include "repository/TransactionRepository.h"
+#include "service/TransactionService.h"
 
 
 int main()
@@ -7,12 +6,22 @@ int main()
 
     Database db;
 
-    db.open("linlinzongzong.db");
+
+    db.open(
+        "linlinzongzong.db"
+    );
+
 
     db.createTables();
 
 
+
     TransactionRepository repo(db);
+
+
+
+    TransactionService service(repo);
+
 
 
     Transaction t(
@@ -20,16 +29,19 @@ int main()
         1,
         35.5,
         1,
-        "2026-07-21",
+        "2026-07-22",
         "午饭"
     );
 
 
-    repo.add(t);
+
+    service.addTransaction(t);
 
 
 
-    auto list = repo.findAll();
+    auto list =
+        service.getAllTransactions();
+
 
 
     for(auto& item:list)

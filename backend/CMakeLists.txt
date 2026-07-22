@@ -17,6 +17,8 @@ add_executable(
     src/database/Database.cpp
 
     src/repository/TransactionRepository.cpp
+
+    src/service/TransactionService.cpp
 )
 
 target_link_libraries(linlinzongzong sqlite3)
