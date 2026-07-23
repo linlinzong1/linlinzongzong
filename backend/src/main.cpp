@@ -48,7 +48,7 @@ int main()
 
     controller.registerRoutes(server);
 
-
+    std::cout << "Server is running on http://localhost:8080" << std::endl;
 
     server.listen(
         "0.0.0.0",

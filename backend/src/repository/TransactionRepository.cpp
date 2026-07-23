@@ -15,7 +15,7 @@ bool TransactionRepository::add(const Transaction& transactions)
     sqlite3* db = database_.getConnection();
 
     const char* sql = "INSERT INTO transactions "
-    "(type, amount, category_id, date, note)"
+    "(type, amount, category_id, date, note)" 
     "VALUES (?, ?, ?, ?, ?);";
 
 
@@ -83,14 +83,12 @@ TransactionRepository::findAll()
         int type = sqlite3_column_int(stmt, 1);
         double amount = sqlite3_column_double(stmt, 2);
         int categoryId = sqlite3_column_int(stmt, 3);
-        std::string date = reinterpret_cast<const char*>(
-            sqlite3_column_text(stmt, 4)
-        );
+        const unsigned char* dateText = sqlite3_column_text(stmt, 4);
+        std::string date = dateText ? reinterpret_cast<const char*>(dateText) : "";
 
 
-        std::string note = reinterpret_cast<const char*>(
-            sqlite3_column_text(stmt, 5)
-        );
+        const unsigned char* noteText = sqlite3_column_text(stmt, 5);
+        std::string note = noteText ? reinterpret_cast<const char*>(noteText) : "";
 
         Transaction transactions(
             id,
@@ -129,6 +127,13 @@ bool TransactionRepository::remove(int id)
     sqlite3_bind_int(stmt, 1, id);
 
     result = sqlite3_step(stmt);
+    if(result != SQLITE_DONE
+    )
+    {
+        std::cerr << "Failed to execute statement: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_finalize(stmt);
+        return false;
+    }
 
     sqlite3_finalize(stmt);
 

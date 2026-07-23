@@ -52,7 +52,7 @@ bool Database::createTables()
             note TEXT
         );
 
-        CREATE TABLE IF NOT EXISTS categoriy (
+        CREATE TABLE IF NOT EXISTS category (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             type INTEGER NOT NULL
