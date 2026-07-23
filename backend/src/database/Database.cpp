@@ -1,4 +1,5 @@
 #include "database/Database.h"
+#include "utils/Logger.h"
 
 #include <iostream>
 
@@ -20,11 +21,11 @@ bool Database::open(const std::string& filename)
 
     if(result!=SQLITE_OK)
     {
-        std::cerr<<"Failed to open database: "<<sqlite3_errmsg(db_)<<std::endl;
+        Logger::error("Failed to open database: " + std::string(sqlite3_errmsg(db_)));
         return false;
     }
 
-    std::cout<<"Database opened successfully."<<std::endl;
+    Logger::info("Database opened successfully: " + filename);
 
     return true;
 }
@@ -35,7 +36,7 @@ void Database::close()
     {
         sqlite3_close(db_);
         db_=nullptr;
-        std::cout<<"Database closed successfully."<<std::endl;
+        Logger::info("Database closed successfully.");
     }
 }
 
@@ -65,7 +66,7 @@ bool Database::createTables()
 
     if(result!=SQLITE_OK)
     {
-        std::cerr<<"Failed to create tables: "<<error<<std::endl;
+        Logger::error("Failed to create tables: " + std::string(error));
         sqlite3_free(error);
         return false;
     }
