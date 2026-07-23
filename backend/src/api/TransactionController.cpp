@@ -12,16 +12,19 @@ void TransactionController::registerRoutes(httplib::Server& server)
 {
     server.Get("/transactions", [&](const httplib::Request& req, httplib::Response& res)
     {
-        auto list = service_.getAllTransactions();
+        auto transactions = service_.getAllTransactions();
         json result = json::array();
-        for (auto& item : list)
+        for (auto& t : transactions)
         {
-            json obj;
-            obj["id"] = item.getId();
-            obj["amount"] = item.getAmount();
-            obj["note"] = item.getNote();
+            json item;
+            item["id"] = t.getId();
+            item["type"] = t.getType();
+            item["amount"] = t.getAmount();
+            item["categoryId"] = t.getCategoryId();
+            item["date"] = t.getDate();
+            item["note"] = t.getNote();
 
-            result.push_back(obj);
+            result.push_back(item);
         }
         res.set_content(result.dump(), "application/json");
     });
