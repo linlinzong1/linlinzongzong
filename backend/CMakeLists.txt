@@ -8,9 +8,9 @@ include_directories(include)
 
 add_executable(
 
-    linlinzongzong 
+    transaction_test
 
-    src/main.cpp
+    tests/transaction_test.cpp
 
     src/model/Transaction.cpp
 
@@ -21,4 +21,4 @@ add_executable(
     src/service/TransactionService.cpp
 )
 
-target_link_libraries(linlinzongzong sqlite3)
+target_link_libraries(transaction_test sqlite3)
