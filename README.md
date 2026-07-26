@@ -1,27 +1,46 @@
 # 林林总总
 
-一个使用 C++ 开发的个人记账软件。
+个人记账系统
 
-## 技术栈
+## Tech Stack
 
 Backend:
 - C++17
+- SQLite3
+- cpp-httplib
+- nlohmann/json
 - CMake
-- SQLite
 
-Frontend:
-- Flutter
+## Current Features
 
-Environment:
-- Linux
+- [x] Database initialization
+- [x] Transaction model
+- [x] Add transaction
+- [x] Query transactions
+- [x] Update transaction
+- [x] Delete transaction
+
+## API
+
+GET:
+GET /transactions
+
+POST:
+POST /transactions
+
+PUT:
+PUT /transactions/{id}
+
+DELETE:
+DELETE /transactions/{id}
 
 
-## Progress
+## Build
 
-- [x] Project initialization
-- [x] Requirement document
-- [x] Database design
-- [x] API design
-- [x] Architecture design
-- [ ] Backend development
-- [ ] Frontend development
+mkdir build
+cd build
+
+cmake ..
+make
+
+./linlinzongzong
