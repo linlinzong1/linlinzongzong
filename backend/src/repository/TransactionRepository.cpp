@@ -140,3 +140,106 @@ bool TransactionRepository::remove(int id)
     return result == SQLITE_DONE;
 
 }
+
+//修改账单
+bool TransactionRepository::update(const Transaction& transaction)
+{
+    std::cout 
+        << "DEBUG update id="
+        << transaction.getId()
+        << std::endl;
+
+    sqlite3* db = database_.getConnection();
+
+    const char* sql = 
+        "UPDATE transactions SET "
+        "type=?, "
+        "amount=?, "
+        "category_id=?, "
+        "date=?, "
+        "note=?"
+        "WHERE id=?;";
+    
+        sqlite3_stmt* stmt;
+
+        int result = sqlite3_prepare_v2(
+            db,
+            sql,
+            -1,
+            &stmt,
+            nullptr
+        );
+
+        if(result != SQLITE_OK)
+        {
+            std::cerr
+            << "Failes to prepare update statement: "
+            << sqlite3_errmsg(db)
+            << std::endl;
+
+            return false;
+        }
+
+        sqlite3_bind_int(
+            stmt,
+            1,
+            transaction.getType()
+        );
+
+        sqlite3_bind_double(
+            stmt,
+            2,
+            transaction.getAmount()
+        );
+
+        sqlite3_bind_int(
+            stmt,
+            3,
+            transaction.getCategoryId()
+        );
+
+        std::string date = 
+            transaction.getDate();
+
+        sqlite3_bind_text(
+            stmt,
+            4,
+            date.c_str(),
+            -1,
+            SQLITE_TRANSIENT
+        );
+
+        std::string note = 
+            transaction.getNote();
+            
+        sqlite3_bind_text(
+            stmt,
+            5,
+            note.c_str(),
+            -1,
+            SQLITE_TRANSIENT
+        );
+
+        sqlite3_bind_int(
+            stmt,
+            6,
+            transaction.getId()
+        );
+
+        result = sqlite3_step(stmt);
+
+        sqlite3_finalize(stmt);
+        
+        if (result != SQLITE_DONE)
+        {
+            std::cerr
+            << "Failed to update transaction: "
+            << sqlite3_errmsg(db)
+            << std::endl;
+
+            return false;
+        }
+        
+    return true;
+
+}

@@ -28,23 +28,13 @@ int main()
 
     db.createTables();
 
-
-
     TransactionRepository repo(db);
-
-
 
     TransactionService service(repo);
 
-
-
     httplib::Server server;
 
-
-
     TransactionController controller(service);
-
-
 
     controller.registerRoutes(server);
 

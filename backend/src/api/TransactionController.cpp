@@ -9,10 +9,8 @@ TransactionController::TransactionController(TransactionService& service)
 }
 
 void TransactionController::registerRoutes(httplib::Server& server)
-{
+{   
 
-    std::cout << "DEBUG: Registering routes for TransactionController" << std::endl;    
-    
 
     //查询所有交易记录
     server.Get("/transactions", [&](const httplib::Request& req, httplib::Response& res)
@@ -50,8 +48,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
     //新增交易记录
     server.Post("/transactions", [&](const httplib::Request& req, httplib::Response& res)
-    {
-        std::cout << "DEBUG: POST /transactions received" << std::endl;  
+    { 
         try
         {
             auto body = json::parse(req.body);
@@ -88,11 +85,9 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
             Transaction transaction(0, type, amount, categoryId, date, note);
 
-            std::cout << "DEBUG before service" << std::endl;
 
             bool success = service_.addTransaction(transaction);
 
-            std::cout << "DEBUG after service" << std::endl;
 
             json response;
 
@@ -148,4 +143,121 @@ void TransactionController::registerRoutes(httplib::Server& server)
         }
         
     });
+
+    //删除交易记录
+    server.Delete(R"(/transactions/(\d+))", [&](const httplib::Request& req, httplib::Response& res)
+    {
+
+        try
+        {
+            int id = std::stoi(req.matches[1]);
+
+            std::cout << "DEBUG: Deleting transaction with ID: " << id << std::endl;
+
+            bool  success = service_.deleteTransaction(id);
+
+            json response;
+
+            if(success)
+            {
+                response["success"] = true;
+                response["message"] = "Transaction deleted successfully.";
+                res.status = 200; // OK
+            }
+            else
+            {
+                response["success"] = false;
+                response["message"] = "Failed to delete transaction.";
+
+                res.status = 500; // Internal Server Error
+            }
+
+            res.set_content(response.dump(), "application/json");
+
+        }
+        catch(const std::exception& e)
+        {
+            json error;
+            error["success"] = false;
+            error["message"] = std::string("Failed to delete transaction: ") + e.what();
+
+            res.status = 500; // Internal Server Error
+
+            res.set_content(error.dump(), "application/json");
+        }
+
+        
+    });
+
+    //修改交易记录
+    server.Put(R"(/transactions/(\d+))", [&](const httplib::Request& req, httplib::Response& res)
+    {
+        try
+        {
+            int id = std::stoi(req.matches[1]);
+
+            auto body = json::parse(req.body);
+
+            int type = body.at("type").get<int>();
+
+            double amount = body.at("amount").get<double>();
+
+            int categoryId = body.at("categoryId").get<int>();
+
+            std::string date = body.at("date").get<std::string>();
+
+            std::string note = body.value("note", "");
+
+            Transaction transactions(
+                id,
+                type,
+                amount,
+                categoryId,
+                date,
+                note
+            );
+
+            bool success = service_.updateTransaction(transactions);
+
+            json response;
+
+            if(success)
+            {
+                response["success"] = true;
+
+                response["message"] = "Transaction updated successfully.";
+
+                res.status = 200;
+            }
+            else
+            {
+                response["success"] = false;
+                response["message"] = "Failse to update transactions";
+
+                res.status = 500;
+            }
+
+            res.set_content(
+                response.dump(),
+                "application/json"
+            );
+
+        }
+        catch(const std::exception& e)
+        {
+            json error;
+            error["success"] = false;
+            error["message"] = e.what();
+
+            res.status = 400;
+
+            res.set_content(error.dump(),
+                "application/json"
+            );
+        }
+        
+
+    });
+
 }
+

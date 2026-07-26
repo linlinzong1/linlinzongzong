@@ -9,11 +9,13 @@ class TransactionService
 public:
     TransactionService(TransactionRepository& repository);
 
-    bool addTransaction(const Transaction& transaction);
+    bool addTransaction(const Transaction& transactions);
 
     std::vector<Transaction> getAllTransactions();
 
     bool deleteTransaction(int id);
+
+    bool updateTransaction(const Transaction& transactions);
 
 private:
 

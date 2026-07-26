@@ -19,6 +19,8 @@ public:
 
     bool remove(int id);
 
+    bool update(const Transaction& transactions);
+
 private:
 
     Database& database_; //引用成员变量，Respository不拥有Database，只是使用它
