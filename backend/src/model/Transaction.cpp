@@ -1,5 +1,7 @@
 #include "model/Transaction.h"
 
+#include "utils/Logger.h"
+
 #include <iostream>
 
 Transaction::Transaction()
@@ -64,7 +66,7 @@ std::string Transaction::getNote() const
 void Transaction::print() const
 {
    
-    std::cout << "Amount: " << amount_ << std::endl;
+    Logger::debug("Amount: " + std::to_string(amount_));
     
-    std::cout << "Note: " << note_ << std::endl;
+    Logger::debug("Note: " + std::string(note_));
 }

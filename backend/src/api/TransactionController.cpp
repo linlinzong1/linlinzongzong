@@ -1,5 +1,6 @@
 #include "api/TransactionController.h"
 #include <nlohmann/json.hpp>
+#include "utils/Logger.h"
 
 using json = nlohmann::json;
 
@@ -152,7 +153,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
         {
             int id = std::stoi(req.matches[1]);
 
-            std::cout << "DEBUG: Deleting transaction with ID: " << id << std::endl;
+            Logger::debug("DEBUG: Deleting transaction with ID: " + std::to_string(id));
 
             bool  success = service_.deleteTransaction(id);
 

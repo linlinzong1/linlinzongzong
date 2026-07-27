@@ -6,6 +6,8 @@
 
 #include "api/TransactionController.h"
 
+#include "utils/Logger.h"
+
 
 #include "httplib.h"
 
@@ -21,7 +23,7 @@ int main()
         "linlinzongzong.db"
     ))
     {
-        std::cerr << "Failed to open database." << std::endl;
+        Logger::error("Failed to open database.");
         return 1;
     }
 
@@ -38,7 +40,7 @@ int main()
 
     controller.registerRoutes(server);
 
-    std::cout << "Server is running on http://localhost:8080" << std::endl;
+    Logger::debug("Server is running on http://localhost:8080");
 
     server.listen(
         "0.0.0.0",

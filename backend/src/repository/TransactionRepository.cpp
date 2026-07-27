@@ -1,5 +1,7 @@
 #include "repository/TransactionRepository.h"
 
+#include "utils/Logger.h"
+
 #include <iostream>
 
 //构造函数
@@ -22,8 +24,8 @@ bool TransactionRepository::add(const Transaction& transactions)
     sqlite3_stmt* stmt;
     int result = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
     if (result != SQLITE_OK) {
-        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
-        return false; 
+        Logger::error("Failed to prepare statement: "  + std::string(sqlite3_errmsg(db)));
+        return false;
     }
 
     //绑定参数
@@ -42,7 +44,7 @@ bool TransactionRepository::add(const Transaction& transactions)
     sqlite3_finalize(stmt);
 
     if (result != SQLITE_DONE) {
-        std::cerr << "Failed to execute statement: " << sqlite3_errmsg(db) << std::endl;
+        Logger::error("Failed to execute statement: " + std::string(sqlite3_errmsg(db)));
         return false;
     }
 
@@ -70,7 +72,7 @@ TransactionRepository::findAll()
 
 
     if (result != SQLITE_OK) {
-        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
+        Logger::error("Failed to prepare statement: " + std::string(sqlite3_errmsg(db)));
         return resultList; 
     }
 
@@ -120,7 +122,7 @@ bool TransactionRepository::remove(int id)
     int result = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
 
     if (result != SQLITE_OK) {
-        std::cerr << "Failed to prepare statement: " << sqlite3_errmsg(db) << std::endl;
+        Logger::error("Failed to prepare statement: " + std::string(sqlite3_errmsg(db)));
         return false; 
     }
 
@@ -130,7 +132,7 @@ bool TransactionRepository::remove(int id)
     if(result != SQLITE_DONE
     )
     {
-        std::cerr << "Failed to execute statement: " << sqlite3_errmsg(db) << std::endl;
+        Logger::error("Failed to execute statement: " + std::string(sqlite3_errmsg(db)));
         sqlite3_finalize(stmt);
         return false;
     }
@@ -144,10 +146,7 @@ bool TransactionRepository::remove(int id)
 //修改账单
 bool TransactionRepository::update(const Transaction& transaction)
 {
-    std::cout 
-        << "DEBUG update id="
-        << transaction.getId()
-        << std::endl;
+    Logger::debug("DEBUG update id=" + std::to_string(transaction.getId()));
 
     sqlite3* db = database_.getConnection();
 
@@ -172,10 +171,7 @@ bool TransactionRepository::update(const Transaction& transaction)
 
         if(result != SQLITE_OK)
         {
-            std::cerr
-            << "Failes to prepare update statement: "
-            << sqlite3_errmsg(db)
-            << std::endl;
+            Logger::error("Failes to prepare update statement: " + std::string(sqlite3_errmsg(db)));
 
             return false;
         }
@@ -232,10 +228,7 @@ bool TransactionRepository::update(const Transaction& transaction)
         
         if (result != SQLITE_DONE)
         {
-            std::cerr
-            << "Failed to update transaction: "
-            << sqlite3_errmsg(db)
-            << std::endl;
+            Logger::error("Failed to update transaction: " + std::string(sqlite3_errmsg(db)));
 
             return false;
         }

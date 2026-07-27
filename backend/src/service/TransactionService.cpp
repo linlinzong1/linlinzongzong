@@ -2,20 +2,21 @@
 
 #include <iostream>
 
+#include "utils/Logger.h"
+
 TransactionService::TransactionService(TransactionRepository& repository)
     : repository_(repository)
 {
 }
 
-bool TransactionService::addTransaction(const Transaction& transactions)
+bool TransactionService::addTransaction(const Transaction& transaction)
 {
     
-    if (transactions.getAmount() <= 0) {
-        std::cerr << "Invalid transaction amount: " << transactions.getAmount() << std::endl;
-        return false;
+    if (transaction.getAmount() <= 0) {
+        Logger::error("Invalid transaction amount: " + std::to_string(transaction.getAmount()));
     }
 
-    return repository_.add(transactions);
+    return repository_.add(transaction);
 
 }
 
@@ -28,34 +29,30 @@ std::vector<Transaction> TransactionService::getAllTransactions()
 
 bool TransactionService::deleteTransaction(int id)
 {
-    std::cout << "DEBUG delete service id: " << id << std::endl;
+    Logger::debug("DEBUG delete service id: " + std::to_string(id));
 
     if(id <= 0) {
-        std::cerr << "Invalid transaction ID: " << id << std::endl;
+        Logger::error("Invalid transaction ID: " + std::to_string(id));
         return false;
     }
     return repository_.remove(id);
 }
 
-bool TransactionService::updateTransaction(const Transaction& transactions){
-    if(transactions.getId() <= 0)
+bool TransactionService::updateTransaction(const Transaction& transaction){
+    if(transaction.getId() <= 0)
     {
-        std::cerr
-        << "Invalid transaction ID"
-        << std::endl;
+        Logger::error("Invalid transaction ID");
 
         return false;
     }
 
-    if(transactions.getAmount() <= 0)
+    if(transaction.getAmount() <= 0)
     {
-        std::cerr
-        << "Invalid amount"
-        << std::endl;
+        Logger::error("Invalid amount");
 
         return false;
     }
 
-    return repository_.update(transactions);
+    return repository_.update(transaction);
 
 }
