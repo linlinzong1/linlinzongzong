@@ -17,9 +17,11 @@ add_executable(
 
     src/main.cpp
 
-    src/model/Transaction.cpp
+    src/config/Config.cpp
 
     src/database/Database.cpp
+
+    src/model/Transaction.cpp
 
     src/repository/TransactionRepository.cpp
 
@@ -36,7 +38,7 @@ target_link_libraries(
     sqlite3
 )
 
-# 测试业务程序
+# 测试：业务程序
 add_executable(
     transaction_test
 
@@ -59,7 +61,7 @@ target_link_libraries(
     sqlite3
 )
 
-#测试数据库程序
+#测试：数据库连接、建表
 add_executable(
     database_test
 
@@ -73,5 +75,83 @@ add_executable(
 target_link_libraries(
     database_test
 
+    sqlite3
+)
+
+# 测试：SQL CRUD
+add_executable(
+    repository_test
+
+    tests/repository_test.cpp
+
+    src/model/Transaction.cpp
+
+    src/database/Database.cpp
+
+    src/repository/TransactionRepository.cpp
+
+    src/utils/Logger.cpp
+)
+
+
+target_link_libraries(
+    repository_test
+    sqlite3
+)
+
+# 测试：
+add_executable(
+    service_test
+
+    tests/service_test.cpp
+
+    src/model/Transaction.cpp
+
+    src/database/Database.cpp
+
+    src/service/TransactionService.cpp
+
+    src/repository/TransactionRepository.cpp
+
+    src/utils/Logger.cpp
+)
+
+
+target_link_libraries(
+    service_test
+    sqlite3
+)
+
+# 测试：api接口
+add_executable(
+    api_test
+
+    tests/api_test.cpp
+
+    src/model/Transaction.cpp
+    src/database/Database.cpp
+    src/repository/TransactionRepository.cpp
+    src/service/TransactionService.cpp
+    src/api/TransactionController.cpp
+    src/utils/Logger.cpp
+)
+
+
+target_link_libraries(
+    api_test
+    sqlite3
+)
+
+# 测试：
+add_executable(
+    config_test
+
+    tests/config_test.cpp
+
+    src/config/Config.cpp
+)
+
+target_link_libraries(
+    config_test
     sqlite3
 )

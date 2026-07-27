@@ -13,7 +13,11 @@ bool TransactionService::addTransaction(const Transaction& transaction)
 {
     
     if (transaction.getAmount() <= 0) {
-        Logger::error("Invalid transaction amount: " + std::to_string(transaction.getAmount()));
+        Logger::error(
+            "Invalid transaction amount: " 
+            + std::to_string(transaction.getAmount())
+        );
+        return false;
     }
 
     return repository_.add(transaction);

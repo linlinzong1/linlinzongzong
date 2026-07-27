@@ -19,9 +19,28 @@ bool Database::open(const std::string& filename)
 
     result=sqlite3_open(filename.c_str(), &db_);
 
-    if(result!=SQLITE_OK)
+    
+
+    if(result != SQLITE_OK)
     {
         Logger::error("Failed to open database: " + std::string(sqlite3_errmsg(db_)));
+        return false;
+    }
+
+    sqlite3_exec(
+        db_,
+        "PRAGMA foreign_keys = ON;",
+        nullptr,
+        nullptr,
+        nullptr
+    );
+
+    if(result != SQLITE_OK)
+    {
+        Logger::error(
+            "Failed to enable foreign keys."
+        );
+
         return false;
     }
 
@@ -43,39 +62,107 @@ void Database::close()
 bool Database::createTables()
 {
     const char* sql = R"(
-        CREATE TABLE IF NOT EXISTS transactions (
+
+        CREATE TABLE IF NOT EXISTS category
+        (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            type INTEGER NOT NULL,
-            amount REAL NOT NULL,
-            category_id INTEGER NOT NULL,
-            date TEXT NOT NULL,
-            note TEXT
+
+            name TEXT NOT NULL,
+
+            type INTEGER NOT NULL
         );
 
-        CREATE TABLE IF NOT EXISTS category (
+
+        CREATE TABLE IF NOT EXISTS transactions
+        (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            type INTEGER NOT NULL
+
+            type INTEGER NOT NULL,
+
+            amount REAL NOT NULL,
+
+            category_id INTEGER NOT NULL,
+
+            date TEXT NOT NULL,
+
+            note TEXT,
+
+
+            FOREIGN KEY(category_id)
+            REFERENCES category(id)
+
         );
 
     )";
 
+
     char* error=nullptr;
 
-    int result=sqlite3_exec(db_, sql, nullptr, nullptr, &error);
 
-    if(result!=SQLITE_OK)
+    int result = sqlite3_exec(
+        db_,
+        sql,
+        nullptr,
+        nullptr,
+        &error
+    );
+
+
+    if(result != SQLITE_OK)
     {
-        Logger::error("Failed to create tables: " + std::string(error));
+        Logger::error(
+            "Failed to create tables: "
+            + std::string(error)
+        );
+
         sqlite3_free(error);
+
         return false;
     }
 
-    return true;
 
+    Logger::info(
+        "Database tables created successfully."
+    );
+
+
+    return true;
 }
 
 sqlite3* Database::getConnection()
 {
     return db_;
+}
+
+bool Database::beginTransaction()
+{
+    return sqlite3_exec(
+        db_,
+        "BEGIN TRANSACTION;",
+        nullptr,
+        nullptr,
+        nullptr
+    ) == SQLITE_OK;
+}
+
+bool Database::commit()
+{
+    return sqlite3_exec(
+        db_,
+        "COMMIT;",
+        nullptr,
+        nullptr,
+        nullptr
+    ) == SQLITE_OK;
+}
+
+bool Database::rollback()
+{
+    return sqlite3_exec(
+        db_,
+        "ROLLBACK;",
+        nullptr,
+        nullptr,
+        nullptr
+    ) == SQLITE_OK;
 }

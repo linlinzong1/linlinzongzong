@@ -22,6 +22,12 @@ public:
 
     sqlite3* getConnection();
 
+    bool beginTransaction();
+
+    bool commit();
+
+    bool rollback();
+
 private:
 
     sqlite3* db_;   
