@@ -1,5 +1,4 @@
-#ifndef DATABASE_H
-#define DATABASE_H
+#pragma once
 
 #include <string>
 
@@ -20,6 +19,10 @@ public:
 
     bool createTables();
 
+    bool initialize();
+
+    bool initDefaultData();
+
     sqlite3* getConnection();
 
     bool beginTransaction();
@@ -34,4 +37,3 @@ private:
 
 };
 
-#endif // DATABASE_H

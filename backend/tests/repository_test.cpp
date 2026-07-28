@@ -16,7 +16,9 @@ int main()
     );
 
 
-    db.createTables();
+    assert(
+        db.initialize()
+    );
 
 
 
@@ -65,7 +67,20 @@ int main()
         << "Add and Find test passed"
         << std::endl;
 
+    //====================
+    // 测试按ID查询
+    //====================
 
+    auto result = 
+    repo.findById(1);
+
+    assert(result.has_value());
+
+    assert(result->getAmount()==50);
+
+    std::cout
+    << "FindById test passed"
+    << std::endl;
 
     //====================
     // 测试删除

@@ -55,8 +55,14 @@ int main()
         return 1;
     }
 
+    if(!db.initialize())
+    {
+        Logger::error(
+            "Database initialization failed"
+        );
 
-    db.createTables();
+        return 1;
+    }
 
 
 
@@ -80,6 +86,20 @@ int main()
 
     httplib::Server server;
 
+    server.set_default_headers({
+        {"Access-Control-Allow-Origin", "*"},
+        {"Access-Control-Allow-Headers", "Content-Type"},
+        {"Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"}
+    });
+
+    server.Options(
+    R"(/.*)",
+    [](const httplib::Request& req,
+       httplib::Response& res)
+        {
+            res.status = 200;
+        }
+    );
 
 
     controller.registerRoutes(server);
@@ -99,15 +119,20 @@ int main()
     // 5. 启动服务器
     //=========================
 
-    server.listen(
-        config.get("host").c_str(),
-        config.getInt("port")
+    bool running = server.listen(
+    config.get("host").c_str(),
+    config.getInt("port")
     );
 
 
+    if(!running)
+    {
+        Logger::error(
+            "Server start failed"
+        );
 
-    db.close();
-
+        return 1;
+    }
 
     return 0;
 }

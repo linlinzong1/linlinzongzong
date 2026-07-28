@@ -2,6 +2,7 @@
 #define TRANSACTION_REPOSITORY_H
 
 #include <vector>
+#include <optional>
 
 #include "model/Transaction.h"
 #include "database/Database.h"
@@ -20,6 +21,8 @@ public:
     bool remove(int id);
 
     bool update(const Transaction& transactions);
+
+    std::optional<Transaction> findById(int id);
 
 private:
 

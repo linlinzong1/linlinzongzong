@@ -1,8 +1,10 @@
 #include "repository/TransactionRepository.h"
+#include "database/Database.h"
 
 #include "utils/Logger.h"
 
 #include <iostream>
+#include <optional>
 
 //构造函数
 TransactionRepository::TransactionRepository(Database& database)
@@ -108,6 +110,76 @@ TransactionRepository::findAll()
 
     return resultList;
 
+}
+
+//根据ID查找账单
+std::optional<Transaction> TransactionRepository::findById(int id)
+{
+    const char* sql = 
+    R"(
+        SELECT
+            id,
+            type,
+            amount,
+            category_id,
+            date,
+            note
+        FROM transactions
+        WHERE id = ?;    
+    )";
+
+    sqlite3_stmt* stmt;
+
+    int result = 
+    sqlite3_prepare_v2(
+        database_.getConnection(),
+        sql,
+        -1,
+        &stmt,
+        nullptr
+    );
+
+    if(result != SQLITE_OK)
+    {
+        Logger::error(
+            "Failes to prepare findById statement"
+        );
+        return std::nullopt;
+    }
+
+    sqlite3_bind_int(
+        stmt,
+        1,
+        id
+    );
+
+    Transaction transaction;
+
+    if(sqlite3_step(stmt)
+        == SQLITE_ROW)
+    {
+        transaction = Transaction(
+            sqlite3_column_int(stmt, 0),
+            sqlite3_column_int(stmt, 1),
+            sqlite3_column_double(stmt, 2),
+            sqlite3_column_int(stmt, 3),
+            reinterpret_cast<const char*>(
+                sqlite3_column_text(stmt, 4)
+            ),
+
+            reinterpret_cast<const char*>(
+                sqlite3_column_text(stmt, 5)
+            )
+        );
+
+        sqlite3_finalize(stmt);
+
+        return transaction;
+    }
+
+    sqlite3_finalize(stmt);
+
+    return std::nullopt;
 }
 
 //删除账单
