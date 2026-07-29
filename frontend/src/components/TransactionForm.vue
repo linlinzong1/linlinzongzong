@@ -63,6 +63,26 @@ async function submit(){
 
 </script>
 
+<style scoped>
+
+div{
+    margin-bottom:10px;
+}
+
+input,
+select{
+    width:200px;
+    height:30px;
+    font-size:16px;
+}
+
+button{
+    padding:5px 15px;
+    margin-right:10px;
+}
+
+</style>
+
 <template>
 
 <div>
