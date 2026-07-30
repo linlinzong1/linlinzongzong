@@ -23,13 +23,24 @@ add_executable(
 
     src/model/Transaction.cpp
 
+    src/model/Category.cpp
+
+    src/repository/CategoryRepository.cpp
+
     src/repository/TransactionRepository.cpp
 
     src/service/TransactionService.cpp
 
+    src/service/CategoryService.cpp
+
     src/api/TransactionController.cpp
 
+    src/api/CategoryController.cpp
+
     src/utils/Logger.cpp
+
+    src/utils/DateUtils.cpp
+
 )
 
 target_link_libraries(
@@ -46,6 +57,10 @@ add_executable(
 
     src/model/Transaction.cpp
 
+    src/model/Category.cpp
+
+    src/repository/CategoryRepository.cpp
+
     src/database/Database.cpp
 
     src/repository/TransactionRepository.cpp
@@ -53,6 +68,8 @@ add_executable(
     src/service/TransactionService.cpp
 
     src/utils/Logger.cpp
+
+    src/utils/DateUtils.cpp
 )
 
 target_link_libraries(
@@ -86,6 +103,10 @@ add_executable(
 
     src/model/Transaction.cpp
 
+    src/model/Category.cpp
+
+    src/repository/CategoryRepository.cpp
+
     src/database/Database.cpp
 
     src/repository/TransactionRepository.cpp
@@ -107,13 +128,21 @@ add_executable(
 
     src/model/Transaction.cpp
 
+    src/model/Category.cpp
+
+    src/repository/CategoryRepository.cpp
+
     src/database/Database.cpp
 
     src/service/TransactionService.cpp
 
+    src/service/CategoryService.cpp
+
     src/repository/TransactionRepository.cpp
 
     src/utils/Logger.cpp
+
+    src/utils/DateUtils.cpp
 )
 
 
@@ -129,11 +158,15 @@ add_executable(
     tests/api_test.cpp
 
     src/model/Transaction.cpp
+    src/model/Category.cpp
+
+    src/repository/CategoryRepository.cpp
     src/database/Database.cpp
     src/repository/TransactionRepository.cpp
     src/service/TransactionService.cpp
     src/api/TransactionController.cpp
     src/utils/Logger.cpp
+    src/utils/DateUtils.cpp
 )
 
 
@@ -155,3 +188,30 @@ target_link_libraries(
     config_test
     sqlite3
 )
+
+# 测试：支出/收入类型
+
+add_executable(
+    category_test
+
+    tests/category_test.cpp
+
+    src/model/Transaction.cpp
+
+    src/model/Category.cpp
+
+    src/repository/CategoryRepository.cpp
+
+    src/database/Database.cpp
+
+    src/repository/TransactionRepository.cpp
+
+    src/utils/Logger.cpp
+
+)
+
+target_link_libraries(
+    category_test
+    sqlite3
+)
+

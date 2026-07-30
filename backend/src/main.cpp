@@ -1,10 +1,15 @@
 #include "database/Database.h"
 
+
 #include "repository/TransactionRepository.h"
+#include "repository/CategoryRepository.h"
 
 #include "service/TransactionService.h"
+#include "service/CategoryService.h"
 
 #include "api/TransactionController.h"
+#include "api/CategoryController.h"
+
 
 #include "utils/Logger.h"
 
@@ -70,13 +75,23 @@ int main()
     // 3. 初始化业务层
     //=========================
 
-    TransactionRepository repo(db);
+    TransactionRepository transactionRepo(db);
 
 
-    TransactionService service(repo);
+    TransactionService transactionService(transactionRepo);
 
 
-    TransactionController controller(service);
+    TransactionController transactionController(transactionService);
+
+
+
+    CategoryRepository categoryRepo(db);
+
+
+    CategoryService categoryService(categoryRepo);
+
+
+    CategoryController categoryController(categoryService);
 
 
 
@@ -102,7 +117,9 @@ int main()
     );
 
 
-    controller.registerRoutes(server);
+    transactionController.registerRoutes(server);
+
+    categoryController.registerRoutes(server);
 
 
 

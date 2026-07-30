@@ -34,7 +34,7 @@ const editForm = ref({
 });
 
 
-async function load()
+async function loadTransactions()
 {
 
     transactions.value =
@@ -56,7 +56,7 @@ async function handleDelete(id)
     await deleteTransaction(id);
 
 
-    await load();
+    await loadTransactions();
 
 }
 
@@ -103,7 +103,7 @@ async function saveEdit()
         note:""
     };
 
-    await load();
+    await loadTransactions();
 
 }
 
@@ -113,14 +113,14 @@ async function saveEdit()
 
 onMounted(()=>{
 
-    load();
+    loadTransactions();
 
 });
 
 
 defineExpose({
 
-    load
+    loadTransactions
 
 });
 

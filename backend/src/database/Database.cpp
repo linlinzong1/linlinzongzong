@@ -155,21 +155,23 @@ bool Database::initDefaultData()
 
     INSERT OR IGNORE INTO category
     (
-        id,
         name,
         type
     )
     VALUES
 
-    (1,'餐饮',1),
+    ('餐饮',1),
 
-    (2,'交通',1),
+    ('交通',1),
 
-    (3,'购物',1),
+    ('购物',1),
 
-    (4,'娱乐',1),
+    ('娱乐',1),
 
-    (5,'工资',2);
+    ('工资',2),
+
+    ('奖金',2);
+
 
 
     )";

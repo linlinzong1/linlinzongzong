@@ -4,6 +4,8 @@
 
 #include "utils/Logger.h"
 
+#include "utils/DateUtils.h"
+
 TransactionService::TransactionService(TransactionRepository& repository)
     : repository_(repository)
 {
@@ -16,6 +18,16 @@ bool TransactionService::addTransaction(const Transaction& transaction)
         Logger::error(
             "Invalid transaction amount: " 
             + std::to_string(transaction.getAmount())
+        );
+        return false;
+    }
+
+    if(!DateUtils::isValidDate(
+        transaction.getDate()
+    ))
+    {
+        Logger::error(
+            "Invalid date"
         );
         return false;
     }

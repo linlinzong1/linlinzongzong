@@ -16,7 +16,7 @@ const form = ref({
 
 //通知父组件刷新
 const emit = defineEmits([
-    "success"
+    "added"
 ]);
 
 async function submit(){
@@ -46,6 +46,8 @@ async function submit(){
 
     alert("添加成功");
 
+    emit("added");
+
     form.value = {
         type:1,
 
@@ -58,7 +60,6 @@ async function submit(){
         note:""
     };
 
-    emit("success");
 }
 
 </script>
