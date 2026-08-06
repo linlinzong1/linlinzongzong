@@ -14,25 +14,28 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
 
     //查询所有交易记录
-    server.Get("/transactions", [&](const httplib::Request& req, httplib::Response& res)
+    server.Get("/transactions", 
+        [&](const httplib::Request& req, 
+        httplib::Response& res)
     {
         try
         {
             auto transactions = service_.getAllTransactions();
-        json result = json::array();
-        for (auto& t : transactions)
-        {
-            json item;
-            item["id"] = t.getId();
-            item["type"] = t.getType();
-            item["amount"] = t.getAmount();
-            item["categoryId"] = t.getCategoryId();
-            item["date"] = t.getDate();
-            item["note"] = t.getNote();
+            json result = json::array();
+            for (auto& t : transactions)
+            {
+                json item;
+                item["id"] = t.getId();
+                item["type"] = t.getType();
+                item["amount"] = t.getAmount();
+                item["categoryId"] = t.getCategoryId();
+                item["date"] = t.getDate();
+                item["note"] = t.getNote();
+                item["categoryName"] = t.getCategoryName();
 
-            result.push_back(item);
-        }
-        res.set_content(result.dump(), "application/json");
+                result.push_back(item);
+            }
+            res.set_content(result.dump(), "application/json");
         }
 
         catch (const std::exception& e)
@@ -45,6 +48,53 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
             res.set_content(error.dump(), "application/json");
         }
+    });
+
+    //统计界面接口
+    server.Get("/statistics",
+    [&](const httplib::Request& req,
+    httplib::Response& res)
+    {
+
+        try
+        {
+
+            auto stat =
+            service_.getStatistics();
+
+
+            json result;
+
+
+            result["income"] =
+                stat.getIncome();
+
+
+            result["expense"] =
+                stat.getExpense();
+
+
+            result["balance"] =
+                stat.getBalance();
+
+
+
+            res.set_content(
+                result.dump(),
+                "application/json"
+            );
+
+
+        }
+        catch(
+            const std::exception& e
+        )
+        {
+
+            res.status=500;
+
+        }
+
     });
 
     //新增交易记录

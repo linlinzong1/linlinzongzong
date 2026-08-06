@@ -25,6 +25,8 @@ add_executable(
 
     src/model/Category.cpp
 
+    src/model/Statistics.cpp
+
     src/repository/CategoryRepository.cpp
 
     src/repository/TransactionRepository.cpp
@@ -58,6 +60,8 @@ add_executable(
     src/model/Transaction.cpp
 
     src/model/Category.cpp
+
+    src/model/Statistics.cpp
 
     src/repository/CategoryRepository.cpp
 
@@ -105,6 +109,8 @@ add_executable(
 
     src/model/Category.cpp
 
+    src/model/Statistics.cpp
+
     src/repository/CategoryRepository.cpp
 
     src/database/Database.cpp
@@ -129,6 +135,8 @@ add_executable(
     src/model/Transaction.cpp
 
     src/model/Category.cpp
+
+    src/model/Statistics.cpp
 
     src/repository/CategoryRepository.cpp
 
@@ -159,6 +167,7 @@ add_executable(
 
     src/model/Transaction.cpp
     src/model/Category.cpp
+    src/model/Statistics.cpp
 
     src/repository/CategoryRepository.cpp
     src/database/Database.cpp
@@ -199,6 +208,8 @@ add_executable(
     src/model/Transaction.cpp
 
     src/model/Category.cpp
+
+    src/model/Statistics.cpp
 
     src/repository/CategoryRepository.cpp
 

@@ -1,15 +1,10 @@
-#ifndef DATE_UTILS_H
-#define DATE_UTILS_H
-
+#pragma once
 #include <string>
+#include <utility>  // for std::pair
 
-class DateUtils
-{
-public:
-    static std::string today();
-    static bool isValidDate(
-        const std::string& date
-    );
-};
-
-#endif
+namespace DateUtils {
+    std::string today();
+    bool isValidDate(const std::string& date);
+    std::pair<std::string, std::string> getDateRange(
+        const std::string& granularity, const std::string& baseDate);
+}

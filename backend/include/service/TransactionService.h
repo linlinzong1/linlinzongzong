@@ -1,7 +1,7 @@
-#ifndef TRANSACTION_SERVICE_H
-#define TRANSACTION_SERVICE_H
+#pragma once
 
 #include "repository/TransactionRepository.h"
+#include "model/Statistics.h"
 
 class TransactionService
 {
@@ -17,10 +17,10 @@ public:
 
     bool updateTransaction(const Transaction& transaction);
 
+    Statistics getStatistics();
+
 private:
 
     TransactionRepository& repository_; //引用成员变量，Service不拥有Repository，只是使用它
 
 };
-
-#endif // TRANSACTION_SERVICE_H 

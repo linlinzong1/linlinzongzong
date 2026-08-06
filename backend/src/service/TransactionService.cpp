@@ -1,6 +1,13 @@
 #include "service/TransactionService.h"
+#include "model/Statistics.h"
+#include "utils/DateUtils.h"
+#include "utils/Logger.h"
+#include <sqlite3.h>
 
 #include <iostream>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
 #include "utils/Logger.h"
 
@@ -71,4 +78,9 @@ bool TransactionService::updateTransaction(const Transaction& transaction){
 
     return repository_.update(transaction);
 
+}
+
+Statistics TransactionService::getStatistics()
+{
+    return repository_.getStatistics();
 }

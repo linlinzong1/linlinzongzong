@@ -6,6 +6,7 @@ import {
 
 import Home from "../views/Home.vue";
 import Record from "../views/Record.vue";
+import Statistics from "../views/Statistics.vue";
 
 
 const routes=[
@@ -20,7 +21,13 @@ const routes=[
 {
     path:"/record",
     component:Record
+},
+
+{
+    path:"/statistics",
+    component:Statistics
 }
+
 
 
 ];

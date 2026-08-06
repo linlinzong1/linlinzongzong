@@ -144,7 +144,7 @@ void CategoryController::getCategories(
                 {
                     "id",
                     c.getId()
-                }
+                },
 
                 {
                     "name",

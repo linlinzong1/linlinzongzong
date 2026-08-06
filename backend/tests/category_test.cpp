@@ -37,6 +37,7 @@ int main()
 
 
     Category c(
+        1,
         "奶茶",
         1
     );

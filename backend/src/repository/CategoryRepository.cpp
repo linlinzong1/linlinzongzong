@@ -86,7 +86,7 @@ std::vector<Category> CategoryRepository::findByType(int type)
 
         Logger::debug(
             "id="
-            +id
+            + std::to_string(categoryId)
             +
             " name="
             + name
@@ -96,7 +96,7 @@ std::vector<Category> CategoryRepository::findByType(int type)
         );
 
         categories.emplace_back(
-            id,
+            categoryId,
             name,
             categoryType
         );

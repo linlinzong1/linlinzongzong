@@ -20,7 +20,8 @@ Transaction::Transaction(
     double amount,
     int categoryId,
     const std::string& date,
-    const std::string& note
+    const std::string& note,
+    const std::string& categoryName
 )
 {
     
@@ -30,6 +31,7 @@ Transaction::Transaction(
     categoryId_=categoryId;
     date_=date;
     note_=note;
+    categoryName_ = categoryName;
 
 }
 
@@ -61,6 +63,11 @@ std::string Transaction::getDate() const
 std::string Transaction::getNote() const
 {
     return note_;
+}
+
+std::string Transaction::getCategoryName() const
+{
+    return categoryName_;
 }
 
 void Transaction::print() const

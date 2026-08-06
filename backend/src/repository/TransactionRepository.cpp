@@ -1,5 +1,6 @@
 #include "repository/TransactionRepository.h"
 #include "database/Database.h"
+#include "model/Statistics.h"
 
 #include "utils/Logger.h"
 
@@ -60,15 +61,16 @@ TransactionRepository::findAll()
 {
 
     std::vector<Transaction> resultList;
-
     sqlite3* db = database_.getConnection();
 
-    const char* sql = "SELECT id, type, amount, "
-    "category_id, date, note "
-    "FROM transactions;";
+    const char* sql = R"(
+        SELECT t.id, t.type, t.amount, t.category_id, t.date, t.note, c.name 
+        As category_name
+        FROM transactions t
+        LEFT JOIN category c ON t.category_id = c.id;
+    )";
 
     sqlite3_stmt* stmt;
-
 
     int result = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
 
@@ -89,10 +91,13 @@ TransactionRepository::findAll()
         int categoryId = sqlite3_column_int(stmt, 3);
         const unsigned char* dateText = sqlite3_column_text(stmt, 4);
         std::string date = dateText ? reinterpret_cast<const char*>(dateText) : "";
-
-
+    
         const unsigned char* noteText = sqlite3_column_text(stmt, 5);
         std::string note = noteText ? reinterpret_cast<const char*>(noteText) : "";
+
+        const unsigned char* nameText = sqlite3_column_text(stmt, 6);
+        std::string categoryName = nameText ? reinterpret_cast<const char*>(nameText) : ""; 
+
 
         Transaction transactions(
             id,
@@ -100,7 +105,8 @@ TransactionRepository::findAll()
             amount,
             categoryId,
             date,
-            note
+            note,
+            categoryName
         );
         resultList.push_back(transactions);
 
@@ -118,14 +124,16 @@ std::optional<Transaction> TransactionRepository::findById(int id)
     const char* sql = 
     R"(
         SELECT
-            id,
-            type,
-            amount,
-            category_id,
-            date,
-            note
-        FROM transactions
-        WHERE id = ?;    
+            t.id,
+            t.type,
+            t.amount,
+            t.category_id,
+            t.date,
+            t.note,
+            c.name AS category_name
+        FROM transactions t
+        LEFT JOIN category c ON t.category_id = c.id
+        WHERE t.id = ?;    
     )";
 
     sqlite3_stmt* stmt;
@@ -133,52 +141,31 @@ std::optional<Transaction> TransactionRepository::findById(int id)
     int result = 
     sqlite3_prepare_v2(
         database_.getConnection(),
-        sql,
-        -1,
-        &stmt,
-        nullptr
+        sql, -1, &stmt, nullptr
     );
+        if(result != SQLITE_OK){
+            
+            Logger::error(
+                "Failed to prepare findById statement"
+            );
+            return std::nullopt;
+        }
+    sqlite3_bind_int(stmt, 1, id);
+    if(sqlite3_step(stmt) == SQLITE_ROW){
+        int id = sqlite3_column_int(stmt, 0);
+        int type = sqlite3_column_int(stmt, 1);
+        double amount = sqlite3_column_double(stmt, 2);
+        int categoryId = sqlite3_column_int(stmt, 3);
+        std::string date = (const char*)sqlite3_column_text(stmt, 4) ?: "";
+        std::string note = (const char*)sqlite3_column_text(stmt, 5) ?: "";
+        std::string categoryName = (const char*)sqlite3_column_text(stmt, 6) ?: "";
 
-    if(result != SQLITE_OK)
-    {
-        Logger::error(
-            "Failes to prepare findById statement"
-        );
-        return std::nullopt;
-    }
-
-    sqlite3_bind_int(
-        stmt,
-        1,
-        id
-    );
-
-    Transaction transaction;
-
-    if(sqlite3_step(stmt)
-        == SQLITE_ROW)
-    {
-        transaction = Transaction(
-            sqlite3_column_int(stmt, 0),
-            sqlite3_column_int(stmt, 1),
-            sqlite3_column_double(stmt, 2),
-            sqlite3_column_int(stmt, 3),
-            reinterpret_cast<const char*>(
-                sqlite3_column_text(stmt, 4)
-            ),
-
-            reinterpret_cast<const char*>(
-                sqlite3_column_text(stmt, 5)
-            )
-        );
-
+        Transaction transaction(id, type, amount, categoryId, date, note, categoryName);
         sqlite3_finalize(stmt);
-
         return transaction;
     }
 
     sqlite3_finalize(stmt);
-
     return std::nullopt;
 }
 
@@ -306,5 +293,90 @@ bool TransactionRepository::update(const Transaction& transaction)
         }
         
     return true;
+
+}
+
+//统计账单
+Statistics TransactionRepository::getStatistics()
+{
+
+    Statistics statistics;
+
+
+    const char* sql =
+    R"(
+        SELECT
+            type,
+            SUM(amount)
+
+        FROM transactions
+
+        GROUP BY type;
+    )";
+
+
+    sqlite3_stmt* stmt;
+
+
+    if(
+        sqlite3_prepare_v2(
+            database_.getConnection(),
+            sql,
+            -1,
+            &stmt,
+            nullptr
+        )
+        != SQLITE_OK
+    )
+    {
+
+        Logger::error(
+            "prepare statistics failed"
+        );
+
+        return statistics;
+    }
+
+
+
+    while(
+        sqlite3_step(stmt)
+        == SQLITE_ROW
+    )
+    {
+
+        int type =
+        sqlite3_column_int(
+            stmt,
+            0
+        );
+
+
+        double amount =
+        sqlite3_column_double(
+            stmt,
+            1
+        );
+
+
+        if(type==1)
+        {
+            statistics.addExpense(amount);
+        }
+
+
+        if(type==2)
+        {
+            statistics.addIncome(amount);
+        }
+
+    }
+
+
+
+    sqlite3_finalize(stmt);
+
+
+    return statistics;
 
 }
