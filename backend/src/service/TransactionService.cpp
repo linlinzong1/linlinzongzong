@@ -80,7 +80,13 @@ bool TransactionService::updateTransaction(const Transaction& transaction){
 
 }
 
-Statistics TransactionService::getStatistics()
+Statistics TransactionService::getStatistics(
+    std::string granularity,
+    std::string date
+)
 {
-    return repository_.getStatistics();
+    return repository_.getStatistics(
+        granularity,
+        date
+    );
 }

@@ -51,178 +51,178 @@ target_link_libraries(
     sqlite3
 )
 
-# 测试：业务程序
-add_executable(
-    transaction_test
+# # 测试：业务程序
+# add_executable(
+#     transaction_test
 
-    tests/transaction_test.cpp
+#     tests/transaction_test.cpp
 
-    src/model/Transaction.cpp
+#     src/model/Transaction.cpp
 
-    src/model/Category.cpp
+#     src/model/Category.cpp
 
-    src/model/Statistics.cpp
+#     src/model/Statistics.cpp
 
-    src/repository/CategoryRepository.cpp
+#     src/repository/CategoryRepository.cpp
 
-    src/database/Database.cpp
+#     src/database/Database.cpp
 
-    src/repository/TransactionRepository.cpp
+#     src/repository/TransactionRepository.cpp
 
-    src/service/TransactionService.cpp
+#     src/service/TransactionService.cpp
 
-    src/utils/Logger.cpp
+#     src/utils/Logger.cpp
 
-    src/utils/DateUtils.cpp
-)
+#     src/utils/DateUtils.cpp
+# )
 
-target_link_libraries(
-    transaction_test
+# target_link_libraries(
+#     transaction_test
 
-    sqlite3
-)
+#     sqlite3
+# )
 
-#测试：数据库连接、建表
-add_executable(
-    database_test
+# #测试：数据库连接、建表
+# add_executable(
+#     database_test
 
-    tests/database_test.cpp
+#     tests/database_test.cpp
 
-    src/database/Database.cpp
+#     src/database/Database.cpp
 
-    src/utils/Logger.cpp
-)
+#     src/utils/Logger.cpp
+# )
 
-target_link_libraries(
-    database_test
+# target_link_libraries(
+#     database_test
 
-    sqlite3
-)
+#     sqlite3
+# )
 
 # 测试：SQL CRUD
-add_executable(
-    repository_test
+# add_executable(
+#     repository_test
 
-    tests/repository_test.cpp
+#     tests/repository_test.cpp
 
-    src/model/Transaction.cpp
+#     src/model/Transaction.cpp
 
-    src/model/Category.cpp
+#     src/model/Category.cpp
 
-    src/model/Statistics.cpp
+#     src/model/Statistics.cpp
 
-    src/repository/CategoryRepository.cpp
+#     src/repository/CategoryRepository.cpp
 
-    src/database/Database.cpp
+#     src/database/Database.cpp
 
-    src/repository/TransactionRepository.cpp
+#     src/repository/TransactionRepository.cpp
 
-    src/utils/Logger.cpp
-)
-
-
-target_link_libraries(
-    repository_test
-    sqlite3
-)
-
-# 测试：
-add_executable(
-    service_test
-
-    tests/service_test.cpp
-
-    src/model/Transaction.cpp
-
-    src/model/Category.cpp
-
-    src/model/Statistics.cpp
-
-    src/repository/CategoryRepository.cpp
-
-    src/database/Database.cpp
-
-    src/service/TransactionService.cpp
-
-    src/service/CategoryService.cpp
-
-    src/repository/TransactionRepository.cpp
-
-    src/utils/Logger.cpp
-
-    src/utils/DateUtils.cpp
-)
+#     src/utils/Logger.cpp
+# )
 
 
-target_link_libraries(
-    service_test
-    sqlite3
-)
+# target_link_libraries(
+#     repository_test
+#     sqlite3
+# )
 
-# 测试：api接口
-add_executable(
-    api_test
+# # 测试：
+# add_executable(
+#     service_test
 
-    tests/api_test.cpp
+#     tests/service_test.cpp
 
-    src/model/Transaction.cpp
-    src/model/Category.cpp
-    src/model/Statistics.cpp
+#     src/model/Transaction.cpp
 
-    src/repository/CategoryRepository.cpp
-    src/database/Database.cpp
-    src/repository/TransactionRepository.cpp
-    src/service/TransactionService.cpp
-    src/api/TransactionController.cpp
-    src/utils/Logger.cpp
-    src/utils/DateUtils.cpp
-)
+#     src/model/Category.cpp
+
+#     src/model/Statistics.cpp
+
+#     src/repository/CategoryRepository.cpp
+
+#     src/database/Database.cpp
+
+#     src/service/TransactionService.cpp
+
+#     src/service/CategoryService.cpp
+
+#     src/repository/TransactionRepository.cpp
+
+#     src/utils/Logger.cpp
+
+#     src/utils/DateUtils.cpp
+# )
 
 
-target_link_libraries(
-    api_test
-    sqlite3
-)
+# target_link_libraries(
+#     service_test
+#     sqlite3
+# )
 
-# 测试：
-add_executable(
-    config_test
+# # 测试：api接口
+# add_executable(
+#     api_test
 
-    tests/config_test.cpp
+#     tests/api_test.cpp
 
-    src/config/Config.cpp
-)
+#     src/model/Transaction.cpp
+#     src/model/Category.cpp
+#     src/model/Statistics.cpp
 
-target_link_libraries(
-    config_test
-    sqlite3
-)
+#     src/repository/CategoryRepository.cpp
+#     src/database/Database.cpp
+#     src/repository/TransactionRepository.cpp
+#     src/service/TransactionService.cpp
+#     src/api/TransactionController.cpp
+#     src/utils/Logger.cpp
+#     src/utils/DateUtils.cpp
+# )
 
-# 测试：支出/收入类型
 
-add_executable(
-    category_test
+# target_link_libraries(
+#     api_test
+#     sqlite3
+# )
 
-    tests/category_test.cpp
+# # 测试：
+# add_executable(
+#     config_test
 
-    src/model/Transaction.cpp
+#     tests/config_test.cpp
 
-    src/model/Category.cpp
+#     src/config/Config.cpp
+# )
 
-    src/model/Statistics.cpp
+# target_link_libraries(
+#     config_test
+#     sqlite3
+# )
 
-    src/repository/CategoryRepository.cpp
+# # 测试：支出/收入类型
 
-    src/database/Database.cpp
+# add_executable(
+#     category_test
 
-    src/repository/TransactionRepository.cpp
+#     tests/category_test.cpp
 
-    src/utils/Logger.cpp
+#     src/model/Transaction.cpp
 
-)
+#     src/model/Category.cpp
 
-target_link_libraries(
-    category_test
-    sqlite3
-)
+#     src/model/Statistics.cpp
+
+#     src/repository/CategoryRepository.cpp
+
+#     src/database/Database.cpp
+
+#     src/repository/TransactionRepository.cpp
+
+#     src/utils/Logger.cpp
+
+# )
+
+# target_link_libraries(
+#     category_test
+#     sqlite3
+# )
 

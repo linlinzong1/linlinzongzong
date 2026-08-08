@@ -63,34 +63,20 @@ double Statistics::getBalance() const
 
 
 void Statistics::addExpenseCategory(
-    const std::string& name,
-    double amount
+    const CategoryAmount& category
 )
 {
 
-    expenseCategories.push_back(
-        {
-            name,
-            amount
-        }
-    );
+    expenseCategories.push_back(category);
 
 }
 
 
 
-void Statistics::addIncomeCategory(
-    const std::string& name,
-    double amount
-)
+void Statistics::addIncomeCategory(const CategoryAmount& category)
 {
 
-    incomeCategories.push_back(
-        {
-            name,
-            amount
-        }
-    );
+    incomeCategories.push_back(category);
 
 }
 

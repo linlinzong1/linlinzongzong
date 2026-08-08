@@ -26,7 +26,10 @@ public:
 
     sqlite3* getConnection() const{return database_.getConnection();}
 
-    Statistics getStatistics();
+    Statistics getStatistics(
+        const std::string& granularity,
+        const std::string& baseDate
+    );
 
 private:
 

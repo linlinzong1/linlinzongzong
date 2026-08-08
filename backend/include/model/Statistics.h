@@ -46,13 +46,11 @@ public:
     double getBalance() const;
 
     void addExpenseCategory(
-        const std::string& name,
-        double amount
+        const CategoryAmount& category
     );
 
     void addIncomeCategory(
-        const std::string& name,
-        double amount
+        const CategoryAmount& category
     );
 
     const std::vector<CategoryAmount>&

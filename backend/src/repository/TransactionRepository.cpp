@@ -3,6 +3,7 @@
 #include "model/Statistics.h"
 
 #include "utils/Logger.h"
+#include "utils/DateUtils.h"
 
 #include <iostream>
 #include <optional>
@@ -215,7 +216,7 @@ bool TransactionRepository::update(const Transaction& transaction)
         "amount=?, "
         "category_id=?, "
         "date=?, "
-        "note=?"
+        "note=? "
         "WHERE id=?;";
     
         sqlite3_stmt* stmt;
@@ -297,25 +298,50 @@ bool TransactionRepository::update(const Transaction& transaction)
 }
 
 //统计账单
-Statistics TransactionRepository::getStatistics()
+Statistics TransactionRepository::getStatistics(
+    const std::string& granularity,
+    const std::string& baseDate
+)
 {
-
     Statistics statistics;
 
+    auto range =
+    DateUtils::getDateRange(
+        granularity,
+        baseDate
+    );
 
+    std::string today = DateUtils::today();
+    if(baseDate > today)
+    {
+        return statistics;
+    }
+
+
+    std::string startDate =
+        range.first;
+
+
+    std::string endDate =
+        range.second;
+
+    
+    //总收入/总支出
     const char* sql =
     R"(
         SELECT
             type,
             SUM(amount)
-
         FROM transactions
-
+        WHERE date >= ?
+        AND date < ?
         GROUP BY type;
     )";
 
 
+
     sqlite3_stmt* stmt;
+
 
 
     if(
@@ -336,6 +362,23 @@ Statistics TransactionRepository::getStatistics()
 
         return statistics;
     }
+
+    sqlite3_bind_text(
+        stmt,
+        1,
+        startDate.c_str(),
+        -1,
+        SQLITE_TRANSIENT
+    );
+
+
+    sqlite3_bind_text(
+        stmt,
+        2,
+        endDate.c_str(),
+        -1,
+        SQLITE_TRANSIENT
+    );
 
 
 
@@ -359,22 +402,218 @@ Statistics TransactionRepository::getStatistics()
         );
 
 
-        if(type==1)
+        if(type == 1)
         {
-            statistics.addExpense(amount);
+            statistics.addExpense(
+                amount
+            );
         }
 
 
-        if(type==2)
+        if(type == 2)
         {
-            statistics.addIncome(amount);
+            statistics.addIncome(
+                amount
+            );
         }
 
     }
 
-
-
     sqlite3_finalize(stmt);
+
+    //支出分类统计
+    const char* expenseSql =
+    R"(
+        SELECT
+            c.name,
+            SUM(t.amount)
+
+        FROM transactions t
+
+        JOIN category c
+
+        ON t.category_id = c.id
+
+        WHERE t.type = 1
+
+        AND t.date >= ?
+
+        AND t.date < ?
+
+        GROUP BY c.name;
+
+    )";
+
+
+
+    sqlite3_stmt* expenseStmt;
+
+
+
+    if(
+        sqlite3_prepare_v2(
+            database_.getConnection(),
+            expenseSql,
+            -1,
+            &expenseStmt,
+            nullptr
+        )
+        == SQLITE_OK
+    )
+    {
+
+        sqlite3_bind_text(
+            expenseStmt,
+            1,
+            startDate.c_str(),
+            -1,
+            SQLITE_TRANSIENT
+        );
+
+
+        sqlite3_bind_text(
+            expenseStmt,
+            2,
+            endDate.c_str(),
+            -1,
+            SQLITE_TRANSIENT
+        );
+
+        while(
+            sqlite3_step(expenseStmt)
+            == SQLITE_ROW
+        )
+        {
+
+            std::string name =
+            reinterpret_cast<const char*>(
+                sqlite3_column_text(
+                    expenseStmt,
+                    0
+                )
+            );
+
+
+            double amount =
+            sqlite3_column_double(
+                expenseStmt,
+                1
+            );
+
+
+
+            statistics.addExpenseCategory(
+                {
+                    name,
+                    amount
+                }
+            );
+
+        }
+
+
+    }
+
+    
+
+
+    sqlite3_finalize(expenseStmt);
+
+    // 收入分类统计
+    const char* incomeSql =
+    R"(
+        SELECT
+            c.name,
+            SUM(t.amount)
+
+        FROM transactions t
+
+        JOIN category c
+
+        ON t.category_id = c.id
+
+        WHERE t.type = 2
+
+        AND t.date >= ?
+
+        AND t.date < ?  
+
+        GROUP BY c.name;
+
+    )";
+
+
+
+    sqlite3_stmt* incomeStmt;
+
+
+
+    if(
+        sqlite3_prepare_v2(
+            database_.getConnection(),
+            incomeSql,
+            -1,
+            &incomeStmt,
+            nullptr
+        )
+        == SQLITE_OK
+    )
+    {
+
+        sqlite3_bind_text(
+            incomeStmt,
+            1,
+            startDate.c_str(),
+            -1,
+            SQLITE_TRANSIENT
+        );
+
+
+        sqlite3_bind_text(
+            incomeStmt,
+            2,
+            endDate.c_str(),
+            -1,
+            SQLITE_TRANSIENT
+        );
+
+
+        while(
+            sqlite3_step(incomeStmt)
+            == SQLITE_ROW
+        )
+        {
+
+            std::string name =
+            reinterpret_cast<const char*>(
+                sqlite3_column_text(
+                    incomeStmt,
+                    0
+                )
+            );
+
+
+            double amount =
+            sqlite3_column_double(
+                incomeStmt,
+                1
+            );
+
+
+            statistics.addIncomeCategory(
+                {
+                    name,
+                    amount
+                }
+            );
+
+        }
+
+
+    }
+
+
+    sqlite3_finalize(incomeStmt);
 
 
     return statistics;

@@ -59,8 +59,16 @@ void TransactionController::registerRoutes(httplib::Server& server)
         try
         {
 
-            auto stat =
-            service_.getStatistics();
+            std::string granularity = 
+                req.get_param_value("granularity ");
+
+            std::string baseDate = 
+                req.get_param_value("date");
+
+            auto stat = service_.getStatistics(
+                granularity,
+                baseDate
+            );
 
 
             json result;
@@ -76,6 +84,73 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
             result["balance"] =
                 stat.getBalance();
+
+            json expenseCategories =
+                json::array();
+
+
+            for(
+                auto& item :
+                stat.getExpenseCategories()
+            )
+            {
+
+                json category;
+
+
+                category["name"] =
+                    item.name;
+
+
+                category["amount"] =
+                    item.amount;
+
+
+                expenseCategories.push_back(
+                    category
+                );
+
+            }
+
+
+            result["expenseCategories"] =
+                expenseCategories;
+
+
+
+
+            // 收入分类
+
+            json incomeCategories =
+                json::array();
+
+
+            for(
+                auto& item :
+                stat.getIncomeCategories()
+            )
+            {
+
+                json category;
+
+
+                category["name"] =
+                    item.name;
+
+
+                category["amount"] =
+                    item.amount;
+
+
+                incomeCategories.push_back(
+                    category
+                );
+
+            }
+
+
+            result["incomeCategories"] =
+                incomeCategories;
 
 
 

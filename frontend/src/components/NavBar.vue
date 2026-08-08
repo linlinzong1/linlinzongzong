@@ -1,3 +1,5 @@
+//导航按钮
+
 <template>
 
 <div>
@@ -17,7 +19,7 @@
 &nbsp;
 
 <router-link to="/settings">
-设置
+我的
 </router-link>
 
 

@@ -17,7 +17,10 @@ public:
 
     bool updateTransaction(const Transaction& transaction);
 
-    Statistics getStatistics();
+    Statistics getStatistics(
+        std::string granularity,
+        std::string date
+    );
 
 private:
 

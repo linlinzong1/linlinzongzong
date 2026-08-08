@@ -1,275 +1,110 @@
+//最近记录
+
 <script setup>
-
-import {
-    ref,
-    onMounted
-} from "vue";
-
-
-import {
-    getTransactions,
-    deleteTransaction,
-    updateTransaction
-} from "../api/transaction";
-
-
+import {computed, ref, onMounted} from "vue";
+import { getTransactions, deleteTransaction, updateTransaction } from "../api/transaction";
+import TransactionGroup from "./TransactionGroup.vue";
+import TransactionEdit from './TransactionEdit.vue';
 
 const transactions = ref([]);
+const editingItem = ref(null);
 
-const editing = ref(null);
-
-
-const editForm = ref({
-
-    type:1,
-
-    amount:"",
-
-    categoryId:1,
-
-    date:"",
-
-    note:""
-
-});
-
-
-async function loadTransactions()
-{
-
-    transactions.value =
-        await getTransactions();
-
+async function loadTransactions() {
+  transactions.value = await getTransactions();
 }
 
-
-
-async function handleDelete(id)
-{
-
-    if(!confirm("确定删除该账单吗？"))
-    {
-        return;
-    }
-
-
-    await deleteTransaction(id);
-
-
-    await loadTransactions();
-
-}
-
-function startEdit(item)
-{
-
-    editing.value=item;
-
-
-    editForm.value={
-
-        type:item.type,
-
-        amount:item.amount,
-
-        categoryId:item.categoryId,
-
-        date:item.date,
-
-        note:item.note
-
-    };
-
-}
-
-
-
-async function saveEdit()
-{
-
-    await updateTransaction(
-        editing.value.id,
-        editForm.value
+const groupedTransactions = computed(() => {
+    const sorted = [...transactions.value].sort((a, b) =>
+        b.date.localeCompare(a.date)
     );
 
+    const top10 = sorted.slice(0, 10);
 
-    editing.value=null;
+    const groups = {};
+    top10.forEach(item =>{
+        if(!groups[item.date]){
+            groups[item.date] = [];
+        }
+        groups[item.date].push(item);
+    });
 
-    editForm.value={
-        type:1,
-        amount:"",
-        categoryId:1,
-        date:"",
-        note:""
-    };
+    return Object.keys(groups)
+        .sort((a, b) => b.localeCompare(a))
+        .map(date => {
+            const items = groups[date];
+            items.sort((a, b) => b.id - a.id);
+            let totalExpense = 0;
+            let totalIncome = 0;
+            items.forEach(item =>{
+                if(item.type === 1){
+                    totalExpense += item.amount;
+                }else if(item.type === 2){
+                    totalIncome += item.amount;
+                }
+            });
+            return { date, items, totalExpense, totalIncome };
+        });
+});
 
-    await loadTransactions();
-
+// 处理编辑请求
+function handleEdit(item) {
+    console.log('📝 TransactionList.handleEdit 收到', item);
+  editingItem.value = item; // 将记录存入编辑状态
 }
 
+// 保存编辑
+async function handleSave(updatedData) {
+  await updateTransaction(editingItem.value.id, updatedData);
+  editingItem.value = null; // 关闭编辑
+  await loadTransactions(); // 刷新列表
+}
 
+// 取消编辑
+function handleCancel() {
+  editingItem.value = null;
+}
 
-
-
-onMounted(()=>{
-
-    loadTransactions();
-
-});
+// 删除
+async function handleDelete(id) {
+  if (confirm('确定删除该账单吗？')) {
+    await deleteTransaction(id);
+    await loadTransactions();
+  }
+}
 
 
 defineExpose({
-
-    loadTransactions
-
+  refresh: loadTransactions
 });
 
+onMounted(() => {
+  loadTransactions();
+});
 
 </script>
 
 
-
 <template>
 
+<div class="recent">
+    <h2>最近记录</h2>
 
-<div>
+    <!-- 遍历分组，并将事件继续向下传递 -->
+    <TransactionGroup
+      v-for="group in groupedTransactions"
+      :key="group.date"
+      :group="group"
+      @edit="handleEdit"
+      @delete="handleDelete"
+    />
 
-
-<h2>
-账单列表
-</h2>
-
-
-
-<table border="1">
-
-
-<tr>
-
-<th>ID</th>
-
-<th>日期</th>
-
-<th>金额</th>
-
-<th>备注</th>
-
-<th>类型</th>
-
-<th>操作</th>
-
-</tr>
-
-
-
-<tr
-v-for="item in transactions"
-:key="item.id"
->
-
-
-<td>
-{{item.id}}
-</td>
-
-
-<td>
-{{item.date}}
-</td>
-
-
-<td>
-{{item.amount}}
-</td>
-
-
-<td>
-{{item.note}}
-</td>
-
-
-<td>
-
-{{item.type===1?"支出":"收入"}}
-
-</td>
-
-<td>
-
-<button
-@click="startEdit(item)"
->
-修改
-</button>
-
-
-<button
-@click="handleDelete(item.id)"
->
-删除
-</button>
-
-</td>
-
-</tr>
-
-
-
-</table>
-
-<div v-if="editing">
-
-<h3>
-修改账单
-</h3>
-
-
-<input
-v-model="editForm.amount"
-placeholder="金额"
-/>
-
-
-<input
-v-model="editForm.date"
-placeholder="日期"
-/>
-
-<input
-v-model="editForm.categoryId"
-placeholder="分类"
-/>
-
-
-<input
-v-model="editForm.note"
-placeholder="备注"
-/>
-
-
-
-<select v-model="editForm.type">
-
-<option :value="1">
-支出
-</option>
-
-<option :value="2">
-收入
-</option>
-
-</select>
-
-
-<button
-@click="saveEdit"
->
-保存修改
-</button>
-
-
-</div>
-
+    <!-- 编辑弹窗/内联区域 -->
+    <TransactionEdit
+      v-if="editingItem"
+      :item="editingItem"
+      @save="handleSave"
+      @cancel="handleCancel"
+    />
 
 </div>
 

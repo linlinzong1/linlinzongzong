@@ -3,7 +3,8 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { getStatistics } from '../api/statistics';
 
-const granularity = ref('month'); // 'week' | 'month' | 'year'
+//默认以周为范围
+const granularity = ref('week');
 const baseDate = ref(new Date().toISOString().substring(0, 10)); // 今天
 
 // 计算当前显示范围的标签
@@ -38,8 +39,6 @@ function getMonday(date) {
 // 切换粒度时重置基准日期（可选：保持当前日期不变）
 function switchGranularity(g) {
   granularity.value = g;
-  // 如果当前baseDate不是新粒度下合理的日期（例如年粒度要1月1日），可以调整
-  // 这里简单保持原日期，后续重新请求即可
   fetchStats();
 }
 
@@ -55,47 +54,171 @@ function prevPeriod() {
 
 // 下一期
 function nextPeriod() {
-  const d = new Date(baseDate.value);
-  if (granularity.value === 'year') d.setFullYear(d.getFullYear() + 1);
-  else if (granularity.value === 'month') d.setMonth(d.getMonth() + 1);
-  else d.setDate(d.getDate() + 7);
-  baseDate.value = d.toISOString().substring(0, 10);
-  fetchStats();
+    const d = new Date(baseDate.value);
+
+    if (granularity.value === 'year') d.setFullYear(d.getFullYear() + 1);
+
+    else if (granularity.value === 'month') d.setMonth(d.getMonth() + 1);
+
+    else d.setDate(d.getDate() + 7);
+
+    const today = new Date();
+
+    if(d > today)
+    {
+        return;
+    }
+
+    baseDate.value = d.toISOString().substring(0, 10);
+
+    fetchStats();
 }
 
-const stats = ref({ totalIncome: 0, totalExpense: 0, balance: 0, details: [] });
+const stats = ref({
+
+    income:0,
+    expense:0,
+    balance:0,
+    expenseCategories:[],
+    incomeCategories:[]
+
+});
 const loading = ref(false);
 
 // 计算支出分类（带百分比）
-const expenseItems = computed(() => {
-  const items = stats.value.details.filter(d => d.type === 1);
-  const total = items.reduce((sum, d) => sum + d.total, 0);
-  return items.map(d => ({ ...d, percent: total ? (d.total / total) * 100 : 0 }));
+const expenseItems = computed(()=>{
+    const items =
+        stats.value.expenseCategories || [];
+
+    const total =
+        items.reduce(
+            (sum,item)=>
+                sum + item.amount,
+            0
+        );
+
+
+    return items.map(item=>({
+        categoryName:item.name,
+        total:item.amount,
+        percent:
+            total ?
+            item.amount / total * 100
+            :
+            0
+    }));
+
 });
 
 // 计算收入分类（带百分比）
-const incomeItems = computed(() => {
-  const items = stats.value.details.filter(d => d.type === 2);
-  const total = items.reduce((sum, d) => sum + d.total, 0);
-  return items.map(d => ({ ...d, percent: total ? (d.total / total) * 100 : 0 }));
+const incomeItems = computed(()=>{
+    const items =
+        stats.value.incomeCategories || [];
+
+    const total =
+        items.reduce(
+            (sum,item)=>
+                sum + item.amount,
+            0
+        );
+
+
+
+    return items.map(item=>({
+        categoryName:item.name,
+        total:item.amount,
+        percent:
+            total ?
+            item.amount / total * 100
+            :
+            0
+    }));
+
+});
+
+//>按钮限制
+const canNext = computed(()=>{
+
+    const d = new Date(baseDate.value);
+
+
+    if(granularity.value==="year")
+    {
+        d.setFullYear(
+            d.getFullYear()+1
+        );
+    }
+
+
+    if(granularity.value==="month")
+    {
+        d.setMonth(
+            d.getMonth()+1
+        );
+    }
+
+
+    if(granularity.value==="week")
+    {
+        d.setDate(
+            d.getDate()+7
+        );
+    }
+
+
+    return d <= new Date();
+
 });
 
 // 修改 fetchStats 加入 loading
 async function fetchStats() {
-    console.log('🔥 fetchStats called, granularity:', granularity.value, 'baseDate:', baseDate.value);
+    console.log(
+        '🔥 fetchStats called'
+    );
 
-    
-    loading.value = true;
+    loading.value=true;
+
     try {
-        const data = await getStatistics(granularity.value, baseDate.value);
-        stats.value = data;
-    } catch (error) {
-        console.error('加载统计失败', error);
-        stats.value = { totalIncome: 0, totalExpense: 0, balance: 0, details: [] };
-    } finally {
-        loading.value = false;
+        const data =
+          await getStatistics(
+            granularity.value,
+            baseDate.value
+          );
+
+        console.log(
+            "statistics:",
+            data
+        );
+
+
+        stats.value={
+
+            income: data.income,
+            expense: data.expense,
+            balance: data.balance,
+            expenseCategories: data.expenseCategories || [],
+            incomeCategories: data.incomeCategories || []
+
+        };
+
     }
+    catch(error){
+
+        console.error(
+            "加载统计失败",
+            error
+        );
+
+    }
+    finally{
+
+        loading.value=false;
+
+    }
+
 }
+
+
 
 // 监听粒度或基准日期变化（也可手动调用fetchStats）
 watch([granularity, baseDate], fetchStats);
@@ -125,42 +248,53 @@ onMounted(fetchStats);
         <div class="date-picker">
             <button @click="prevPeriod"><</button>
             <span>{{periodLabel}}</span>
-            <button @click="nextPeriod">></button>
+            <button @click="nextPeriod":disabled="!canNext">></button>
         </div>
 
         <!-- 汇总卡片 -->
         <div class="summary" v-if="!loading">
+
             <div class="card income">
-                总收入 ¥{{ stats.totalIncome.toFixed(2) }}
+                总收入 ¥{{ stats.income.toFixed(2) }}
             </div>
+
             <div class="card expense">
-                总支出 ¥{{ stats.totalExpense.toFixed(2) }}
+                总支出 ¥{{ stats.expense.toFixed(2) }}
             </div>
+
             <div class="card balance">
                 结余 ¥{{ stats.balance.toFixed(2) }}
             </div>
+
         </div>
 
         <!-- 支出分类 -->
-        <div class="detail-list" v-if="!loading">
-            <h3>支出分类</h3>
-            <div v-for="item in expenseItems" :key="item.categoryId" class="detail-item">
-                <span>{{ item.categoryName }}</span>
-                <span class="amount">¥{{ item.total.toFixed(2) }}</span>
-                <div class="bar" :style="{ width: item.percent + '%' }"></div>
-            </div>
+        <h3>支出分类</h3>
 
-            <h3>收入分类</h3>
-            <div v-for="item in incomeItems" :key="item.categoryId" class="detail-item">
-                <span>{{ item.categoryName }}</span>
-                <span class="amount">¥{{ item.total.toFixed(2) }}</span>
-                <div class="bar" :style="{ width: item.percent + '%' }"></div>
-            </div>
+        <div v-for="item in expenseItems" :key="item.categoryName" class="detail-item">
+
+            <span>{{ item.categoryName }}</span>
+
+            <span class="amount">¥{{ item.total.toFixed(2) }}</span>
+
+            <div class="bar" :style="{ width: item.percent + '%' }"></div>
+
         </div>
 
-        <!-- 加载状态 -->
-        <div v-if="loading" class="loading">加载中...</div>
-        <div v-if="!loading && stats.details.length === 0" class="empty">暂无数据</div>
+        <h3>收入分类</h3>
+
+        <div v-for="item in incomeItems" :key="item.categoryName" class="detail-item">
+
+            <span>{{ item.categoryName }}</span>
+
+            <span class="amount">¥{{ item.total.toFixed(2) }}</span>
+
+            <div class="bar" :style="{ width: item.percent + '%' }"></div>
+
+        </div>
+
+        <div v-if="!loading && expenseItems.length === 0 
+          && incomeItems.length === 0" class="empty">暂无数据</div>
 
     </div>
 
