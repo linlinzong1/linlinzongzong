@@ -303,6 +303,7 @@ Statistics TransactionRepository::getStatistics(
     const std::string& baseDate
 )
 {
+    
     Statistics statistics;
 
     auto range =
@@ -510,7 +511,6 @@ Statistics TransactionRepository::getStatistics(
             );
 
         }
-
 
     }
 

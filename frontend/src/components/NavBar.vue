@@ -18,7 +18,7 @@
 
 &nbsp;
 
-<router-link to="/settings">
+<router-link to="/mine">
 我的
 </router-link>
 

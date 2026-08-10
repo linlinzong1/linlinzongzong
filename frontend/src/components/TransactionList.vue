@@ -48,7 +48,6 @@ const groupedTransactions = computed(() => {
 
 // 处理编辑请求
 function handleEdit(item) {
-    console.log('📝 TransactionList.handleEdit 收到', item);
   editingItem.value = item; // 将记录存入编辑状态
 }
 

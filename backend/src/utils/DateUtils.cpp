@@ -68,13 +68,16 @@ std::pair<std::string, std::string> getDateRange(const std::string& granularity,
     } else if (granularity == "week") {
         // 周一作为一周开始 (0=周日, 1=周一)
         int wday = tm.tm_wday;
-        int offset = (wday == 0) ? 6 : wday - 1;
+        int offset = (wday == 0) ? 6  : wday - 1;
         time_t startRaw = raw - offset * 86400;
         time_t endRaw = startRaw + 7 * 86400;
-        struct tm* startTm = localtime(&startRaw);
-        struct tm* endTm = localtime(&endRaw);
-        std::strftime(start, sizeof(start), "%Y-%m-%d", startTm);
-        std::strftime(end, sizeof(end), "%Y-%m-%d", endTm);
+        
+        struct tm startTm, endTm;
+        localtime_r(&startRaw, &startTm);
+        localtime_r(&endRaw, &endTm);
+
+        std::strftime(start, sizeof(start), "%Y-%m-%d", &startTm);
+        std::strftime(end, sizeof(end), "%Y-%m-%d", &endTm);
     } else {
         // 默认按月
         return getDateRange("month", baseDate);

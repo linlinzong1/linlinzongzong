@@ -1,5 +1,5 @@
 # CMake
-build/
+backend/build/
 cmake-build-*/
 
 # C++ 编译文件
@@ -17,3 +17,19 @@ cmake-build-*/
 
 # 日志
 *.log
+
+#frontend
+frontend/node_modules/
+frontend/dist
+
+#root node
+node_modules/
+
+#database
+*.db
+*.sqlite
+
+#system
+.DS_Store
+
+

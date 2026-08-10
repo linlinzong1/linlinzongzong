@@ -5,7 +5,9 @@ import { getStatistics } from '../api/statistics';
 
 //默认以周为范围
 const granularity = ref('week');
-const baseDate = ref(new Date().toISOString().substring(0, 10)); // 今天
+const baseDate = ref(new Date().toISOString().substring(0, 10));
+
+
 
 // 计算当前显示范围的标签
 const periodLabel = computed(() => {
@@ -36,9 +38,18 @@ function getMonday(date) {
   return d;
 }
 
-// 切换粒度时重置基准日期（可选：保持当前日期不变）
+//本地日期格式化工具
+function formatLocalDate(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+// 切换粒度时重置基准日期
 function switchGranularity(g) {
   granularity.value = g;
+  baseDate.value = formatLocalDate(new Date());
   fetchStats();
 }
 
@@ -172,10 +183,6 @@ const canNext = computed(()=>{
 
 // 修改 fetchStats 加入 loading
 async function fetchStats() {
-    console.log(
-        '🔥 fetchStats called'
-    );
-
     loading.value=true;
 
     try {
@@ -358,6 +365,12 @@ onMounted(fetchStats);
   text-align: center;
   padding: 40px 0;
   color: #999;
+}
+
+.granularity-tabs button.active{
+    background-color: #3498db;
+    color: #fff;
+    border-color: #3498db;
 }
 
 </style>

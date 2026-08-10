@@ -44,7 +44,6 @@ function save() {
 function cancel() {
   emit('cancel');
 }
-console.log('🎯 TransactionEdit 组件正在渲染，item =', props.item);
 
 </script>
 

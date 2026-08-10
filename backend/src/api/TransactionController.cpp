@@ -60,7 +60,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
         {
 
             std::string granularity = 
-                req.get_param_value("granularity ");
+                req.get_param_value("granularity");
 
             std::string baseDate = 
                 req.get_param_value("date");
