@@ -21,7 +21,7 @@ public:
 
     std::string get(
         const std::string& key
-    );
+    ) const;
 
 
     int getInt(

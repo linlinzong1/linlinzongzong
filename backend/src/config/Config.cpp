@@ -62,12 +62,13 @@ bool Config::load(
 
 std::string Config::get(
     const std::string& key
-)
+) const
 {
+    auto it = configs.find(key);
 
-    if(configs.count(key))
+    if(it != configs.end())
     {
-        return configs[key];
+        return it->second;
     }
 
 
@@ -81,7 +82,12 @@ int Config::getInt(
     const std::string& key
 )
 {
-    return std::stoi(
-        get(key)
-    );
+    std::string value=get(key);
+
+    if(value.empty())
+    {
+        return 0;
+    }
+
+    return std::stoi(value);
 }

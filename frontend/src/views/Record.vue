@@ -38,6 +38,7 @@ function selectCategory(c)
 
 async function loadCategories()
 {
+
     try{
         categories.value = await getCategories(type.value);
 
@@ -63,23 +64,66 @@ onMounted(()=>{
 });
 
 async function submit(){
-    if (categoryId.value === null) {
-        alert('请选择分类');
-        return;
+
+    try {
+
+        console.log("提交数据:",{
+            type:type.value,
+            amount:amount.value,
+            categoryId:categoryId.value,
+            date:date.value,
+            note:note.value
+        });
+
+
+        if (categoryId.value === null) {
+            alert('请选择分类');
+            return;
+        }
+
+
+        if (!amount.value || Number(amount.value)<=0){
+            alert('请输入有效金额');
+            return;
+        }
+
+
+        const result = await addTransaction({
+
+            type:type.value,
+
+            amount:Number(amount.value),
+
+            categoryId:Number(categoryId.value),
+
+            date:date.value,
+
+            note:note.value
+
+        });
+
+
+        console.log("后端返回:",result);
+
+
+        alert("记录成功");
+
+
+        router.push('/');
+
+
+    } catch(error){
+
+        console.error("新增账单失败:",error);
+
+        alert(
+            "记录失败:"
+            +
+            error.message
+        );
+
     }
-    if (!amount.value || Number(amount.value) <= 0) {
-        alert('请输入有效金额');
-        return;
-    }
-    await addTransaction({
-        type: type.value,
-        amount: Number(amount.value),
-        categoryId: categoryId.value,
-        date: date.value,
-        note: note.value
-    });
-    alert('记录成功');
-    router.push('/');
+
 }
 </script>
 

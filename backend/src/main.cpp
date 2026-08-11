@@ -1,3 +1,4 @@
+#include <iostream>
 #include "database/Database.h"
 
 
@@ -48,6 +49,10 @@ int main()
 
     Database db;
 
+    std::cout 
+    << "Database path = "
+    << config.get("database")
+    << std::endl;
 
     if(!db.open(
         config.get("database")
@@ -100,6 +105,12 @@ int main()
     //=========================
 
     httplib::Server server;
+
+    // 前端静态资源
+    server.set_mount_point(
+        "/",
+        "../web"
+    );
 
     server.set_default_headers({
         {"Access-Control-Allow-Origin", "*"},

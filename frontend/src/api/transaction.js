@@ -1,13 +1,6 @@
-import axios from "axios";
 
+import request from "./request";
 
-const request = axios.create({
-
-    baseURL:"http://localhost:8080",
-
-    timeout:5000
-
-});
 
 
 // 查询所有账单
