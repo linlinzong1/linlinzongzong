@@ -109,7 +109,7 @@ void CategoryController::getCategories(
 
         res.set_content(
             R"({"message":"missing type"})",
-            "application/json"
+            "application/json; charset=utf-8"
         );
 
 
@@ -165,7 +165,7 @@ void CategoryController::getCategories(
 
     res.set_content(
         result.dump(),
-        "application/json"
+        "application/json; charset=utf-8"
     );
 
 }
@@ -219,7 +219,7 @@ void CategoryController::addCategory(
 
             res.set_content(
                 R"({"success":true})",
-                "application/json"
+                "application/json; charset=utf-8"
             );
 
         }
@@ -231,7 +231,7 @@ void CategoryController::addCategory(
 
             res.set_content(
                 R"({"success":false})",
-                "application/json"
+                "application/json; charset=utf-8"
             );
 
         }
@@ -246,7 +246,7 @@ void CategoryController::addCategory(
 
         res.set_content(
             R"({"message":"invalid json"})",
-            "application/json"
+            "application/json; charset=utf-8"
         );
 
     }

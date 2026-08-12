@@ -35,7 +35,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
                 result.push_back(item);
             }
-            res.set_content(result.dump(), "application/json");
+            res.set_content(result.dump(), "application/json; charset=utf-8");
         }
 
         catch (const std::exception& e)
@@ -46,7 +46,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
             res.status = 500; // Internal Server Error
 
-            res.set_content(error.dump(), "application/json");
+            res.set_content(error.dump(), "application/json; charset=utf-8");
         }
     });
 
@@ -156,7 +156,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
             res.set_content(
                 result.dump(),
-                "application/json"
+                "application/json; charset=utf-8"
             );
 
 
@@ -193,7 +193,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
                 res.status = 400;
 
-                res.set_content(error.dump(), "application/json");
+                res.set_content(error.dump(), "application/json; charset=utf-8");
                 return;
             }
 
@@ -205,7 +205,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
                 res.status = 400;
 
-                res.set_content(error.dump(), "application/json");
+                res.set_content(error.dump(), "application/json; charset=utf-8");
                 return;
             }
 
@@ -231,7 +231,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
                 res.status = 500; // Internal Server Error
             }
 
-            res.set_content(response.dump(), "application/json");
+            res.set_content(response.dump(), "application/json; charset=utf-8");
 
         }
 
@@ -243,7 +243,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
             res.status = 400; // Bad Request
 
-            res.set_content(error.dump(), "application/json");
+            res.set_content(error.dump(), "application/json; charset=utf-8");
         }
 
         catch (const nlohmann::json::exception& e)
@@ -254,7 +254,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
             res.status = 400; // Bad Request
 
-            res.set_content(error.dump(), "application/json");
+            res.set_content(error.dump(), "application/json; charset=utf-8");
         }
 
         catch (const std::exception& e)
@@ -265,7 +265,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
             res.status = 500; // Internal Server Error
 
-            res.set_content(error.dump(), "application/json");
+            res.set_content(error.dump(), "application/json; charset=utf-8");
         }
         
     });
@@ -298,7 +298,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
                 res.status = 500; // Internal Server Error
             }
 
-            res.set_content(response.dump(), "application/json");
+            res.set_content(response.dump(), "application/json; charset=utf-8");
 
         }
         catch(const std::exception& e)
@@ -309,7 +309,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
             res.status = 500; // Internal Server Error
 
-            res.set_content(error.dump(), "application/json");
+            res.set_content(error.dump(), "application/json; charset=utf-8");
         }
 
         
@@ -365,7 +365,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
 
             res.set_content(
                 response.dump(),
-                "application/json"
+                "application/json; charset=utf-8"
             );
 
         }
@@ -378,7 +378,7 @@ void TransactionController::registerRoutes(httplib::Server& server)
             res.status = 400;
 
             res.set_content(error.dump(),
-                "application/json"
+                "application/json; charset=utf-8"
             );
         }
         
